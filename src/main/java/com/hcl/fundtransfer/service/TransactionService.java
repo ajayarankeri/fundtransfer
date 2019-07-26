@@ -15,6 +15,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.hcl.fundtransfer.dto.ConfirmPayeeDto;
 import com.hcl.fundtransfer.dto.OtpGenrateDto;
 import com.hcl.fundtransfer.dto.ResponseDto;
 import com.hcl.fundtransfer.dto.TranjactionResponseDto;
@@ -126,9 +127,9 @@ public class TransactionService {
 		
 	}
 	
-	public ResponseDto confirmPayee(long payeeId) throws ResourceNotFoundException {
+	public ResponseDto confirmPayee(ConfirmPayeeDto confirmPayeeDto) throws ResourceNotFoundException {
 
-		Payee payeeObject=payeeRepository.findById(payeeId).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
+		Payee payeeObject=payeeRepository.findById(confirmPayeeDto.getRefrenceId()).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
 
 		ResponseDto responseDto;
 		if(checkExpiredOtp(payeeObject.getReferenceId())) {
@@ -137,6 +138,10 @@ public class TransactionService {
 		}
 		else
 		{ 
+			if(confirmPayeeDto.getOtp().equals(payeeObject.getOtp()))
+			{
+				throw new ResourceNotFoundException("wrong otp entered");
+			}
 			payeeObject.setStatus(1);
 			payeeRepository.save(payeeObject);
 			responseDto=new ResponseDto("sucess",200,"payee confirmed sucessfully");

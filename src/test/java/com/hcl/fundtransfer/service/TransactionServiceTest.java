@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.hcl.fundtransfer.dto.ConfirmPayeeDto;
 import com.hcl.fundtransfer.dto.OtpGenrateDto;
 import com.hcl.fundtransfer.entity.Account;
 import com.hcl.fundtransfer.entity.Customer;
@@ -58,6 +59,7 @@ public class TransactionServiceTest {
 	Transaction transaction1,transaction2;
 	List<Transaction> transactionList;
 	OtpGenrateDto otpGenrateDto;
+	ConfirmPayeeDto confirmPayeeDto;
 	
 	@Before
 	public void setMockdata() {
@@ -69,6 +71,10 @@ public class TransactionServiceTest {
 		customer.setFullName("vinayak");
 		customer.setGender("M");
 		customer.setMobileNo("123456789");
+		
+		confirmPayeeDto=new ConfirmPayeeDto();
+		confirmPayeeDto.setOtp("1234");
+		confirmPayeeDto.setRefrenceId(1);
 		
 		payeeObj=new Customer();
 		payeeObj.setAddress("Pune");
@@ -149,13 +155,13 @@ public class TransactionServiceTest {
 	public void  confirmPayeeTest() throws ResourceNotFoundException {
 		Mockito.when(payeeRepository.findById(1l)).thenReturn(Optional.of(payee));
 		Mockito.when(customerRepository.findById(1l)).thenReturn(Optional.of(customer));
-		assertNotNull(transactionService.confirmPayee(1l));
+		assertNotNull(transactionService.confirmPayee(confirmPayeeDto));
 	}
 	
 	@Test
 	public void  confirmPayeeFailTest() throws ResourceNotFoundException {
 		Mockito.when(payeeRepository.findById(2l)).thenReturn(Optional.of(payee1));
-		assertNotNull(transactionService.confirmPayee(2l));
+		assertNotNull(transactionService.confirmPayee(confirmPayeeDto));
 	}
 	
 	@Test
