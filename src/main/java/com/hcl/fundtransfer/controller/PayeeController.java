@@ -1,6 +1,8 @@
 package com.hcl.fundtransfer.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +19,8 @@ public class PayeeController {
 	PayeeService payeeService;
 	
 	@PostMapping("/payee/{customer_id}")
-	public void getInterestUsers(@PathVariable("customer_id") long customer_id) throws ResourceNotFoundException{ 		
-	  // return new ResponseEntity<>(userOperationService.getConfirmedPayeeList(id,type),HttpStatus.OK);  
+	public ResponseEntity<Object> getInterestUsers(@PathVariable("customer_id") long customer_id) throws ResourceNotFoundException{ 		
+	   return new ResponseEntity<>(payeeService.getConfirmedPayeeList(customer_id),HttpStatus.OK);  
 	}
 
 }

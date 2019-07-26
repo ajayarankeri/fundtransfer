@@ -6,4 +6,6 @@ import com.hcl.fundtransfer.entity.Payee;
 
 public interface PayeeRepository extends JpaRepository<Payee, Long>{
 
+	Object findByCustomerId(long customer_id);
+
 }
