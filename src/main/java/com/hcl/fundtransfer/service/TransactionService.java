@@ -102,8 +102,8 @@ public class TransactionService {
 	public TranjactionResponseDto getAllTransaction(long customerId,String fromDate,String toDate) throws ResourceNotFoundException{
 		Customer customerObject=customerRepository.findById(customerId).orElseThrow(()->new ResourceNotFoundException("Customer not found"));	
 		List<Transaction> objTransactionList=transactionRepository.findByCustomerIdAndTransactionDateGreaterThanAndTransactionDateLessThan(customerObject, LocalDate.parse(fromDate), LocalDate.parse(toDate));
-		double credit=objTransactionList.stream().filter(e->e.getTransactionType().equals("Cr")).mapToDouble(e->e.getTransactionAount()).sum();
-		double debit=objTransactionList.stream().filter(e->e.getTransactionType().equals("Dr")).mapToDouble(e->e.getTransactionAount()).sum();
+		double credit=objTransactionList.stream().filter(e->e.getTransactionType().equalsIgnoreCase("Cr")).mapToDouble(e->e.getTransactionAount()).sum();
+		double debit=objTransactionList.stream().filter(e->e.getTransactionType().equalsIgnoreCase("Dr")).mapToDouble(e->e.getTransactionAount()).sum();
 		double totalBalance=validateCustomerDetails(customerId).getBalance();	
 		TranjactionResponseDto tranjactionResponseDto=new TranjactionResponseDto();
 		tranjactionResponseDto.setTransactionResult(objTransactionList);
@@ -128,9 +128,9 @@ public class TransactionService {
 		
 	}
 	
-	public ResponseDto confirmPayee(OtpGenrateDto otpGenrateDto) throws ResourceNotFoundException {
-		Customer customerObject=customerRepository.findById(otpGenrateDto.getCustomerId()).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
-		Payee payeeObject=payeeRepository.findById(otpGenrateDto.getPayeeId()).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
+	public ResponseDto confirmPayee(long payeeId) throws ResourceNotFoundException {
+	//	Customer customerObject=customerRepository.findById(otpGenrateDto.getCustomerId()).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
+		Payee payeeObject=payeeRepository.findById(payeeId).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
 	//	sendEmail(payeeObject.getReferenceId(),payeeObject.getPayeeId().getEmail());
 		ResponseDto responseDto;
 		if(checkExpiredOtp(payeeObject.getReferenceId())) {
