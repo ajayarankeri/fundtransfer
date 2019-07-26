@@ -12,6 +12,8 @@ import com.hcl.fundtransfer.entity.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Long>{
 
 	public Customer findByCustomerId(Long customerId);
+	
+	
 
 	
 }

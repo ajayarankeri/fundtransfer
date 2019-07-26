@@ -1,4 +1,4 @@
-package com.hcl.fundtransfer.confige;
+package com.hcl.fundtransfer.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
