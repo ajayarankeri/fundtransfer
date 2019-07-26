@@ -116,20 +116,22 @@ public class TransactionService {
 	
 	
 	public ResponseDto sendOtp(OtpGenrateDto otpGenrateDto) throws ResourceNotFoundException {
-		Customer customerObject=customerRepository.findById(otpGenrateDto.getCustomerId()).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
 		Payee payeeObject=payeeRepository.findById(otpGenrateDto.getPayeeId()).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
 		sendEmail(payeeObject.getReferenceId(),payeeObject.getPayeeId().getEmail());
 		payeeObject.setOtp(random(6));
 		payeeObject.setExpiryTime(LocalDateTime.now().plusMinutes(5));
 		payeeRepository.save(payeeObject);
-		ResponseDto responseDto=new ResponseDto("sucess",200,"Otp sent sucessfully");
-		return responseDto;
+		return new ResponseDto("sucess",200,"Otp sent sucessfully");
 		
 	}
 	
 	public ResponseDto confirmPayee(ConfirmPayeeDto confirmPayeeDto) throws ResourceNotFoundException {
 
+
+
 		Payee payeeObject=payeeRepository.findById(confirmPayeeDto.getRefrenceId()).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
+
+
 
 		ResponseDto responseDto;
 		if(checkExpiredOtp(payeeObject.getReferenceId())) {
@@ -144,8 +146,7 @@ public class TransactionService {
 			}
 			payeeObject.setStatus(1);
 			payeeRepository.save(payeeObject);
-			responseDto=new ResponseDto("sucess",200,"payee confirmed sucessfully");
-			return responseDto;
+			return new ResponseDto("sucess",200,"payee confirmed sucessfully");
 		}
 		
 	}
