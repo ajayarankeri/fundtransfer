@@ -17,4 +17,5 @@ public interface PayeeRepository extends JpaRepository<Payee, Long>{
 
 	List<Customer> findByCustomerId(@Param("customerId")Customer customerDetails);
 
+
 }

@@ -1,5 +1,8 @@
 package com.hcl.fundtransfer.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,5 +39,8 @@ public class Payee {
 	
 	@Column(name="otp")
 	private String otp;
+	
+	@Column(name="expiry_time")
+	private LocalDateTime expiryTime;
 }
 	
