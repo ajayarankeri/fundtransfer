@@ -57,7 +57,7 @@ public class TransactionService {
 		if(transactionDto.getTransactionType().equalsIgnoreCase("DR")) {			
 		
 			if(accountDetails.getBalance()<transactionDto.getTransactionAount()) {
-					log.debug("Sorry, Your dont have sufficient balance for transaction: For customer Id=" +accountDetails.getCustomerId());
+					log.debug("Sorry, Your dont have sufficient balance for transaction ");
 					throw new ResourceNotFoundException("Sorry, Your dont have sufficient balance for transaction!");
 				}else {
 					transaction=new Transaction();

@@ -19,8 +19,8 @@ public class PayeeController {
 	PayeeService payeeService;
 	
 	@PostMapping("/payee/{customer_id}")
-	public ResponseEntity<Object> getInterestUsers(@PathVariable("customer_id") long customer_id) throws ResourceNotFoundException{ 		
-	   return new ResponseEntity<>(payeeService.getConfirmedPayeeList(customer_id),HttpStatus.OK);  
+	public ResponseEntity<Object> getPayee(@PathVariable("customer_id") long customerId) throws ResourceNotFoundException{ 	
+	   return new ResponseEntity<>(payeeService.getConfirmedPayeeList(customerId),HttpStatus.OK);  
 	}
 
 }

@@ -63,7 +63,7 @@ public class AccountController {
 	}
 	
 	@PostMapping("/transaction/history")
-	public ResponseEntity<?> getTransactionHistory(@RequestParam(value="customerId") Long customerId) throws ResourceNotFoundException{
+	public ResponseEntity<List<Transaction>> getTransactionHistory(@RequestParam(value="customerId") Long customerId) throws ResourceNotFoundException{
 		
 		List<Transaction> lastTenTransaction= null;
 		if(customerId!=null) {
@@ -73,7 +73,7 @@ public class AccountController {
 			log.debug("Not a valid customer Id");
 			throw new ResourceNotFoundException("Not a valid customer Id");
 		}
-		return new ResponseEntity<List<Transaction>>(lastTenTransaction,HttpStatus.OK);
+		return new ResponseEntity<>(lastTenTransaction,HttpStatus.OK);
 		
 	}
 	

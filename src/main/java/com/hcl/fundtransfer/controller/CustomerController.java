@@ -15,7 +15,7 @@ import com.hcl.fundtransfer.service.CustomerService;
 
 
 @RestController
-@RequestMapping("/register")
+@RequestMapping("/user")
 public class CustomerController {
 	
 	
@@ -25,9 +25,9 @@ public class CustomerController {
 	
 	
 	@PostMapping("")
-	public ResponseEntity<String> registerUser(@Valid @RequestBody CustomerDto customerDto) {
+	public ResponseEntity<String> addUser(@Valid @RequestBody CustomerDto customerDto) {
 		
-		return new ResponseEntity<>("Hello , You are registered successfully. Your Customer Id is  "+customerService.registerUser(customerDto)+"",HttpStatus.OK);
+		return new ResponseEntity<>("Hello , You are added successfully. Your Customer Id is  "+customerService.registerUser(customerDto)+"",HttpStatus.OK);
 		
 	}
 	
