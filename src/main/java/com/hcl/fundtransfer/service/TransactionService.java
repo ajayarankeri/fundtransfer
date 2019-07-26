@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -172,6 +170,7 @@ public class TransactionService {
 	                generatedToken.append(number.nextInt(9));
 	            }
 	        } catch (NoSuchAlgorithmException e) {
+	        	log.debug("error thrown");
 	            e.printStackTrace();
 	        }
 

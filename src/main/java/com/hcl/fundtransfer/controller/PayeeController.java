@@ -3,7 +3,6 @@ package com.hcl.fundtransfer.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +25,8 @@ public class PayeeController {
 	TransactionService transactionService;
 	
 	@PostMapping("/payee/{customerId}") 
-	public ResponseEntity<Object> getInterestUsers(@PathVariable("customerIid") long customer_id) throws ResourceNotFoundException{ 		
-	   return new ResponseEntity<>(payeeService.getConfirmedPayeeList(customer_id),HttpStatus.OK);  
+	public ResponseEntity<Object> getInterestUsers(@PathVariable("customer_id") long customerId) throws ResourceNotFoundException{ 		
+	   return new ResponseEntity<>(payeeService.getConfirmedPayeeList(customerId),HttpStatus.OK);  
 	}
 	
 
@@ -39,15 +38,15 @@ public class PayeeController {
 
 	
 	@PostMapping("/payee/add")
-	public ResponseEntity<?> addPayee(@RequestParam("customer_id") Long customerId ,@RequestParam("payee_id") Long payeeId) throws ResourceNotFoundException, PayeeAndCustomerCannotBeSameException{
+	public ResponseEntity<Object> addPayee(@RequestParam("customer_id") Long customerId ,@RequestParam("payee_id") Long payeeId) throws ResourceNotFoundException, PayeeAndCustomerCannotBeSameException{
 		if(null==customerId) {
 			throw new ResourceNotFoundException("please provide customer id");
 		}
 		else if (null==payeeId) {
-			throw new ResourceNotFoundException("please provide customer id");
+			throw new ResourceNotFoundException("please provide payee id");
 		}
-		payeeService.addPayee(customerId, payeeId);
-		return new ResponseEntity<>("Success",HttpStatus.OK);
+		
+		return new ResponseEntity<>(payeeService.addPayee(customerId, payeeId),HttpStatus.OK);
 	}
 
 
