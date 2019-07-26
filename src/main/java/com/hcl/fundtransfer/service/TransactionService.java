@@ -1,22 +1,34 @@
 package com.hcl.fundtransfer.service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.swing.text.StyledEditorKit.BoldAction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.hcl.fundtransfer.dto.OtpGenrateDto;
+import com.hcl.fundtransfer.dto.ResponseDto;
 import com.hcl.fundtransfer.dto.TranjactionResponseDto;
 import com.hcl.fundtransfer.dto.TransactionDto;
 import com.hcl.fundtransfer.entity.Account;
 import com.hcl.fundtransfer.entity.Customer;
+import com.hcl.fundtransfer.entity.Payee;
 import com.hcl.fundtransfer.entity.Transaction;
 import com.hcl.fundtransfer.exception.ResourceNotFoundException;
 import com.hcl.fundtransfer.repository.AccountRepository;
 import com.hcl.fundtransfer.repository.CustomerRepository;
+import com.hcl.fundtransfer.repository.PayeeRepository;
 import com.hcl.fundtransfer.repository.TransactionRepository;
 
 
@@ -34,7 +46,11 @@ public class TransactionService {
 	@Autowired
 	CustomerRepository customerRepository;
 	
-	
+	@Autowired
+	JavaMailSender javaMailSender;
+
+	@Autowired
+	PayeeRepository payeeRepository;
 
 	public Transaction makeTransaction(TransactionDto transactionDto,Account accountDetails) throws ResourceNotFoundException {
 		Transaction transaction = null;
@@ -98,9 +114,76 @@ public class TransactionService {
 		return tranjactionResponseDto;
 	}
 	
+	
+	
+	public ResponseDto sendOtp(OtpGenrateDto otpGenrateDto) throws ResourceNotFoundException {
+		Customer customerObject=customerRepository.findById(otpGenrateDto.getCustomerId()).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
+		Payee payeeObject=payeeRepository.findById(otpGenrateDto.getPayeeId()).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
+		sendEmail(payeeObject.getReferenceId(),payeeObject.getPayeeId().getEmail());
+		payeeObject.setOtp(random(6));
+		payeeObject.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+		payeeRepository.save(payeeObject);
+		ResponseDto responseDto=new ResponseDto("sucess",200,"Otp sent sucessfully");
+		return responseDto;
+		
+	}
+	
+	public ResponseDto confirmPayee(OtpGenrateDto otpGenrateDto) throws ResourceNotFoundException {
+		Customer customerObject=customerRepository.findById(otpGenrateDto.getCustomerId()).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
+		Payee payeeObject=payeeRepository.findById(otpGenrateDto.getPayeeId()).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
+	//	sendEmail(payeeObject.getReferenceId(),payeeObject.getPayeeId().getEmail());
+		ResponseDto responseDto;
+		if(checkExpiredOtp(payeeObject.getReferenceId())) {
+			responseDto=new ResponseDto("fail",402,"Otp expired");
+			return responseDto;
+		}
+		else
+		{ 
+			payeeObject.setStatus(1);
+			payeeRepository.save(payeeObject);
+			responseDto=new ResponseDto("sucess",200,"payee confirmed sucessfully");
+			return responseDto;
+		}
+		
+	}
+	
 	public List<Transaction> getTransactionHistoryByCustomerId(Long customerId) throws ResourceNotFoundException
 	{	
 		Customer customer = customerRepository.findById(customerId).orElseThrow(()-> new ResourceNotFoundException("resource not found"));
 		return transactionRepository.findTop10ByCustomerIdOrderByTransactionDateDesc(customer);
-		}
+	}
+	
+	public void sendEmail(long payee,String email) throws MailException {
+		SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setTo(email);
+		mail.setSubject("Testing Mail API");
+		mail.setText("Otp for payeId "+random(6));
+		javaMailSender.send(mail);
+	}
+	
+	
+	 public static String random(int size) {
+
+	        StringBuilder generatedToken = new StringBuilder();
+	        try {
+	            SecureRandom number = SecureRandom.getInstance("SHA1PRNG");
+	            // Generate 20 integers 0..20
+	            for (int i = 0; i < size; i++) {
+	                generatedToken.append(number.nextInt(9));
+	            }
+	        } catch (NoSuchAlgorithmException e) {
+	            e.printStackTrace();
+	        }
+
+	        return generatedToken.toString();
+	    }
+	 
+	 
+	 public boolean checkExpiredOtp(long id) throws ResourceNotFoundException {		 
+		 Payee objectPayee=payeeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("no payee found"));
+		 return LocalDateTime.now().isAfter(objectPayee.getExpiryTime());	 
+	 }
+	 
+	 
+
 }
