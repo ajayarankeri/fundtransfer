@@ -25,13 +25,10 @@ public class CustomerService {
 		
 		BeanUtils.copyProperties(customerDto, customer);
 		
-		
-		Customer customerObj = new Customer();
-		customerObj =	customerRepository.save(customer);
+		Customer customerObj =	customerRepository.save(customer);
 		
 		Account account =new Account();
 		int number=(int)((Math.random()*9000000)+1000000);
-		//double d = Double.parseDouble(number);
 		
 		account.setCustomerId(customerObj);
 		account.setAccountNumber(Long.valueOf(number));

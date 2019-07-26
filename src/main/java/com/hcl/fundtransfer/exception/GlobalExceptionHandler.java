@@ -3,8 +3,6 @@ package com.hcl.fundtransfer.exception;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +18,9 @@ import com.hcl.fundtransfer.dto.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	
 	@Override
 	    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-	//        logger.error("exception occured------"+ex.getBindingResult().getAllErrors());
 		 List<String> details = new ArrayList<>();
 	        for(ObjectError error : ex.getBindingResult().getAllErrors()) {
 	            details.add(error.getDefaultMessage());
@@ -33,35 +29,21 @@ static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 	        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	    }
 	 
-//	// @ExceptionHandler(NoTicketException.class)
-//	 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//	    public final ResponseEntity<Object> handleAllExceptions(NoTicketException ex, WebRequest request) {
-//	    
-//		// logger.error("no ticket exception occured------"+ex.getMessage());
-//		 List<String> details = new ArrayList<>();
-//	        details.add(ex.getMessage());
-//	        ErrorResponse error = new ErrorResponse("Server Error", details,Integer.toString(HttpStatus.BAD_REQUEST.value()));
-//	        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//	    }
-//	 
-//	 @ExceptionHandler(NoSameUserIdException.class)
-//	 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//	    public final ResponseEntity<Object> handleNoSameUserIdException(NoSameUserIdException ex, WebRequest request) {
-//		 logger.error("No same user id exception occured------"+ex.getMessage());   
-//		 List<String> details = new ArrayList<>();
-//	        details.add(ex.getMessage());
-//	        ErrorResponse error = new ErrorResponse("Server Error", details,Integer.toString(HttpStatus.BAD_REQUEST.value()));
-//	        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//	    }
-//	 
-	 
-	 @ExceptionHandler(ResourceNotFoundException.class)
+	@ExceptionHandler(ResourceNotFoundException.class)
 	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	    public final ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-		// logger.error(" Resource not found exception occured------"+ex.getMessage());   
+	    public final ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {   
 		 List<String> details = new ArrayList<>();
 	        details.add(ex.getMessage());	        
 	        ErrorResponse error = new ErrorResponse("Server Error", details,Integer.toString(HttpStatus.NOT_FOUND.value()));
-	        return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+	        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
 	    }
+	 
+	 @ExceptionHandler(PayeeAndCustomerCannotBeSameException.class)
+		@ResponseStatus(value = HttpStatus.NOT_ACCEPTABLE)
+		    public final ResponseEntity<ErrorResponse> handlePayeeAndCustomerCannotBeSameException(PayeeAndCustomerCannotBeSameException ex, WebRequest request) {
+			 List<String> details = new ArrayList<>();
+		        details.add(ex.getMessage());	        
+		        ErrorResponse error = new ErrorResponse("Server Error", details,Integer.toString(HttpStatus.NOT_ACCEPTABLE.value()));
+		        return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_ACCEPTABLE);
+		    }
 }
