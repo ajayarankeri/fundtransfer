@@ -6,8 +6,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -129,9 +127,9 @@ public class TransactionService {
 	}
 	
 	public ResponseDto confirmPayee(long payeeId) throws ResourceNotFoundException {
-	//	Customer customerObject=customerRepository.findById(otpGenrateDto.getCustomerId()).orElseThrow(()->new ResourceNotFoundException("Customer not found"));
+
 		Payee payeeObject=payeeRepository.findById(payeeId).orElseThrow(()->new ResourceNotFoundException("refrence id not found"));
-	//	sendEmail(payeeObject.getReferenceId(),payeeObject.getPayeeId().getEmail());
+
 		ResponseDto responseDto;
 		if(checkExpiredOtp(payeeObject.getReferenceId())) {
 			responseDto=new ResponseDto("fail",402,"Otp expired");
@@ -153,12 +151,13 @@ public class TransactionService {
 		return transactionRepository.findTop10ByCustomerIdOrderByTransactionDateDesc(customer);
 	}
 	
-	public void sendEmail(long payee,String email) throws MailException {
+	public String sendEmail(long payee,String email) throws MailException {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(email);
-		mail.setSubject("Testing Mail API");
-		mail.setText("Otp for payeId "+random(6));
+		mail.setSubject("OTP FOR PAYEE");
+		mail.setText("Otp for Payee Reference Id"+payee +"  "+random(6));
 		javaMailSender.send(mail);
+		return "mailsent";
 	}
 	
 	
